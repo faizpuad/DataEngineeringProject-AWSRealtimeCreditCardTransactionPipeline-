@@ -44,7 +44,7 @@ stack.ts
 # requirements.txt
 
 # ignore pgadmin docker etc
-docker-pgadmin/
+# docker-pgadmin/
 
 #ignore images until doc complete
 # images/

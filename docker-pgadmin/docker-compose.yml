@@ -1,0 +1,21 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "80:80"  # Expose pgAdmin port (default 80)
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin  # Persist pgAdmin data
+    networks:
+      - pg_network
+
+networks:
+  pg_network:
+    driver: bridge
+
+volumes:
+  pgadmin_data:
+    driver: local
