@@ -1,0 +1,92 @@
+name: CDK Deployment Workflow
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        environment: [dev]
+
+    steps:
+      # Code Checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Setup Node.js
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # Install Dependencies
+      - name: Install Project Dependencies
+        run: |
+          npm ci
+          npm install aws-cdk-lib
+          npm install -D aws-cdk
+
+      # Configure AWS
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Build & Push Docker Image
+      - name: Build and Push Docker Image
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/project-image:$IMAGE_TAG ./path/to/dockerfile
+          docker push $ECR_REGISTRY/project-image:$IMAGE_TAG
+
+      # CDK Bootstrap (if required)
+      - name: CDK Bootstrap
+        run: |
+          npx cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # CDK Synthesize
+      - name: CDK Synthesize
+        run: npx cdk synth
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+
+      # CDK Diff
+      - name: CDK Diff
+        id: diff-check
+        run: npx cdk diff
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+
+      # CDK Deployment
+      - name: Deploy CDK Stack
+        if: steps.diff-check.outcome == 'success'
+        run: |
+          npx cdk deploy --require-approval never
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+
+      # Notify Success
+      - name: Notify Success
+        if: success()
+        run: echo "Deployment successful for environment: ${{ matrix.environment }}"
+
+      # Notify Failure
+      - name: Notify Failure
+        if: failure()
+        run: echo "Deployment failed. Check logs for details."
