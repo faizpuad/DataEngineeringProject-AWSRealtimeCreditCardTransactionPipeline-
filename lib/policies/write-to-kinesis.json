@@ -1,0 +1,14 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "lambdawritekinesis",
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

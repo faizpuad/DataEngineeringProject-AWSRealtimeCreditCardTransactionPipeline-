@@ -1,0 +1,34 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "RDSFullAccess",
+            "Effect": "Allow",
+            "Action": [
+                "rds:*",
+                "rds-db:connect",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+                "ec2:CreateVpcEndpoint",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DeleteVpcEndpoints",
+                "ec2:ModifyVpcEndpoint"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VPCAccess",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:ModifyNetworkInterfaceAttribute",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
