@@ -1,0 +1,50 @@
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+cdk.out/
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Ignore source data file
+data
+
+# Ignore client source data
+client_core/
+
+# Ignore local environment variables
+.env
+
+# Ignore Python virtual environment directories
+*venv/*
+venv/
+
+# Ignore temporary and log files
+*.log
+*.tmp
+
+# Ignore TypeScript build artifacts
+*.tsbuildinfo
+dist/
+
+# ignore self note
+notes.txt
+notes.md
+security.md
+
+# ignore unused stack
+stack.ts
+
+#forget to delete od stack that still consist of metada
+#deleetd old dev stack so no conflict to deploy new things
+
+# ignore requirements
+# requirements.txt
+
+# ignore pgadmin docker etc
+docker-pgadmin/
+
+#ignore images until doc complete
+# images/
