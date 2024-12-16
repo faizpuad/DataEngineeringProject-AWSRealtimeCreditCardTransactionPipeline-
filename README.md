@@ -1,4 +1,4 @@
-# AWS Realtime Credit Card Transaction Streaming Data Pipeline  
+# AWS Realtime Credit Card Transaction Streaming OLTP Data Pipeline  
 ## Overview
 This project explores AWS services to perform near real-time Online Transactional Processing (OLTP) pipeline, which involved streaming of data and process it before stored in S3 bucket
 
@@ -11,10 +11,10 @@ This project explores AWS services to perform near real-time Online Transactiona
 ## Objectives:
 1. Build a scalable OLTP pipeline using AWS cloud services that consist of services that are fully managed and serverless.
 2. Design ER diagram for relational modeling that ensure integrity, optimization and segregation of data importance based on entities declared.
-3. Gain expertise with cutting-edge tools like in cloud computing thru AWS.
+3. Gain expertise with cutting-edge tools in cloud computing by building pipeline using AWS service.
 
 ## Use Case: Financial Institution
-Financial services and institutions are constantly challenged on their current practise to anticipate with Anti Money Laundering and Counterfeit Terrorism. These two acts involve diversified customers transaction traces either digital or physical. Turnaround time optimize over time are their best bet to track those potential infamous parties performing anomaly transaction. Thus, implementing almost real-time transaction event monitoring does prove it importance. 
+In the dynamic world of financial services, institutions are perpetually tasked with the challenge of combating Anti-Money Laundering (AML) and Counter-Terrorism Financing (CTF). These illicit activities involve a wide range of customer transactions, both digital and physical. To effectively identify and intercept these suspicious transactions, institutions must continuously enhance their turnaround time for monitoring and analysis. Implementing near real-time transaction event monitoring is critical in tracking and responding to potentially malicious activities. By leveraging advanced technologies that support efficeint and near real time data streaming thru AWS service, financial institutions can promptly detect anomalies and take proactive measures using data analytics faster to prevent fraudulent activities, ensuring compliance and safeguarding the financial system.
 
 OLTP streaming is the ideal solution here, offering:
 
@@ -33,7 +33,7 @@ OLTP streaming is the ideal solution here, offering:
 - [Connect With Me](#-connect-with-me)
 - [Appendix](#-appendix)
 
-The data dictionary can be find in [data-dictionary.md](./er-diagram-design/data-dictionary.md)
+Please refer the credit card data dictionary in [data-dictionary.md](./er-diagram-design/data-dictionary.md)
 
 ## Project Architecture
 The project leverages several key technologies to create a reliable OLTP streaming system:
@@ -52,7 +52,7 @@ The pipeline overview classified according to Andreas's data science blueprint f
 ![AWS Streaming data science blueprint pipeline overview](./images/goal3_AlternativeEnhanced_v3_3_12_2024.jpg)
 
 ## Transaction Stream Processing Pipeline
-The stream pipeline starts by local client create request via RESTful API GET/POST method to the AWS API Gateway, the data if posted will be authenticate, processed by lambda. Lambda will then pass the data into Kinesis data stream which will buffer the data. A landing S3 bucket will then store the data and event driven lambda will automatically pass the data into a custom Postgres database created using RDS.
+The stream pipeline starts by local client create request via RESTful API GET/POST method to the AWS API Gateway, the request will be authenticated by lambda. Lambda will then generate an allow or deny policy which if allow then pass the data into Kinesis data stream which will buffer the data. A landing S3 bucket will then store the data and event driven lambda will automatically pass the data into a custom Postgres database created using RDS. Then, a Quicksight dashboard is created by pulling data inside the Postgres and pgAdmin used for monitor data strcuture/ or query purpose of data inside the Postgres
 
 ### Detailed Pipeline Process Flow:
 
@@ -67,7 +67,7 @@ Lambda is used as main processing tool in several key areas:
    - Lambda act as an authorizer and validate user token. If token is valid, it will generate an `allow access` policy to dedicated resource for the next stage
 
 2. **Data Extraction and Transfer:**
-   - Data POST request if authorized will be process by a lambda and put into Kinesis Data Stream
+   - Data POST request if authorized will be processed by a lambda and put into Kinesis Data Stream
    - Data received by **Kinesis Data Stream** is processed by a Lambda function to:
      - Batch incoming records
      - Convert raw transaction logs into a structured CSV or JSON format.
@@ -103,7 +103,7 @@ Lambda is used as main processing tool in several key areas:
 
 ### 0. Relational Data Modeling / Entity Relationship Diagram Design
 
-In this project, I aim to simulate a business scenario that serves as a foundational starting point for any data pipeline initiative. Clear communication with downstream business users is essential; without it, the data pipeline design risks becoming ineffective, leading to a data swamp rather than delivering valuable insights. It is crucial to recognize that technical implementation must align with the organization’s overarching business objectives. This project follows a bottom-up approach, prioritizing the needs of downstream users before addressing upstream processes. An Entity-Relationship (ER) diagram plays a vital role in ensuring that OLTP data storage is reliable, consistent, and free from duplication. By applying data normalization techniques, the risk of data errors is significantly reduced, as records are systematically updated to maintain accuracy. The choice of a relational database management system (RDBMS) is appropriate here due to its ACID properties, which guarantee atomicity, consistency, isolation, and durability, ensuring the integrity of transactional data throughout the pipeline.
+In this project, I aim to simulate a business scenario that serves as a foundational starting point for any data pipeline initiative. Clear communication with downstream business users is essential; without it, the data pipeline design risks becoming ineffective, leading to a data swamp rather than delivering valuable insights. It is crucial to recognize that technical implementation must align with the organization’s overarching business objectives. This project follows a bottom-up approach, prioritizing the needs of downstream users before addressing upstream processes. An Entity-Relationship (ER) diagram plays a vital role in ensuring that OLTP data storage is reliable, consistent, and free from duplication just enough as business use required. By applying data normalization techniques, the risk of data errors is significantly reduced, as records are systematically updated to maintain accuracy. The choice of a relational database management system (RDBMS) is appropriate here due to its ACID properties, which guarantee atomicity, consistency, isolation, and durability, ensuring the integrity of transactional data throughout the pipeline.
 
 Conceptual model:
 
@@ -113,7 +113,7 @@ Physical model:
 
 ![conceptual_model](./images/goal3_logicalnphysical_model_final.jpg)
 
-For above conceptual and physical data model, I have attached a document that contained proposed potential business questions to start constructing the relational model, the methodology and thought process to design conceptual, logical and physical data model. Refer [schema_design_cc_fraud.xlsx](./er-diagram-design/schema_design_cc_fraud.xlsx).
+For above conceptual and physical data model, I have attached a document that includes proposed potential business questions to start constructing the relational model, the methodology and thought process to design conceptual, logical and physical data model. Refer [schema_design_cc_fraud.xlsx](./er-diagram-design/schema_design_cc_fraud.xlsx).
 
 ### 1. Project Setup & Structure
 
@@ -139,7 +139,7 @@ npm install -g aws-cdk
 cdk --version
 ```
 
-Setup project in a specific directory. I am using typescript language for the project
+Setup project in a specific directory. I am using typescript language for the AWS CDK
 ```
 # initiate prebuilt project
 cdk init app --language=typescript
@@ -208,7 +208,7 @@ cdk-github-action
 ### 3. Setup of Identity and Access Management (IAM) user, policy and credentials
 
 ### a. Setup AWS IAM
- With ease of readability in mind, I created a user inside a user group.
+ I created a user inside a user group.
  - user group enable sharing of policy for compilation of user under it
  - I.e. create and administrator user group, attach administrator related policy and create bunch of users that will inherit the user group permission access
 
@@ -217,20 +217,20 @@ From IAM GUI below, there is only one user for this project that inherited the p
 
 ### b. Setup credential policy and credential
 
-Below are the assigned policies to the user created that will managed the cdk setup. Note that this might not be suitable to use in production as it opens to wide unnecessary permission:
+Below are the assigned policies to the user created that will managed the cdk setup. Note that this granted policies "near and full access" might not be suitable to use in production as it opens to wide unnecessary permission:
 ![User group attached policies](./images/goal3_user_group_attached_policies.png)
 
-Aws Cdk require credential of user are `AWS_ACCESS_KEY`,`AWS_SECRET_ACCESS_KEY`,`AWS_REGION` (for this project, the region is in Ohio, us-east-2) and policy such as IAM and CloudFormation access to create resources with respective role.
+AWS CDK requires credential of user are `AWS_ACCESS_KEY`,`AWS_SECRET_ACCESS_KEY`,`AWS_REGION` (for this project, the region is in Ohio, us-east-2) and policy such as IAM and CloudFormation access to create resources with respective role.
 
-For creating lambda with containerized package, it  user need to have access to ECR and respective lambda should able to access the VPC. RDS policy also enable management of RDS instance created later on.
+For creating lambda with containerized package, user need to have access to ECR and respective lambda should able to access the VPC and also equip with RDS policy that is needed to enable management of RDS instance created later on.
 
-This project leverage Github Actions as the main CI/CD tool. Thus, initial credentials required will be stored as action secrets here. This credentials are basic requirement to execute AWS CDK bootstrapping, until AWS CDK project deployment in the cloud.
+This project leverage Github Actions as the main CI/CD tool. Thus, initial credentials required will be stored as Github Action secrets here. This credentials are basic requirement to execute AWS CDK deployment in the cloud.
 
 ![workflow github action aws cdk creds](./images/goal3_github_action_aws_cdk_credential.png)
 
 From Workflow snippet above, noticed that it requires credential to execute AWS CDK project.
 
-In later stage of constructor creation in project main stack file, an Aws secret manager will be created to stored current resource properties (such as bucket name, endpoint of RDS Postgres) in it. This will enable future improvement or project to reuse the resource properties for enhancement or other function and make the project loosely decoupled.
+In later stage of constructor creation in project main stack file, an AWS secret manager will be created to stored current resource properties (such as bucket name, endpoint of RDS Postgres) in it. This will enable future improvement or project to reuse the resource properties for enhancement or other function and make the project loosely decoupled.
 
 ## c. Setup of github workflow
 
@@ -241,7 +241,7 @@ Below is the simplified Github Actions workflow design for this project
 Please refer [github action with important notes diagram](./images/goal3_mapify_cdk_deploy_workflow.png "Github Actions workflow overview diagram") for more granular detail of the workflow.
 
 Few consideration I explored here:
-- ensure every resource creation is in order of dependency. I.e. lambda with containerized dependency package require login and create a specific repository in Elastic Container Registry (ECR) beforehand. That way only the dockerized image can be host in the ECR.
+- ensure every resource creation is in order of dependency. I.e. lambda with containerized dependency package require login and create a specific repository in Elastic Container Registry (ECR) beforehand. That way then only the dockerized image can be host in the ECR.
 - the workflow is setup to trigger as I commit code via `dev` branch or pull request on `main` branch. Thus, it is important to make cdk bootstrap as optional to reduce the time taken and redundancy to setup cdk default resources.
 - to ensure container image exist in ECR repo, I use `aws ecr describe` command to list out existing repositories and images
 - if the deployment action fail or suceess, there will be log and notification email.
@@ -251,8 +251,6 @@ Refer [Github Actions workflow yml](./.github/workflows/deploy.yml) for the work
 Example workflow trigger by push to dev branch and pull request test success
 ![github pull request example](./images/goal3_github_pull_request_finalized.png)
 
----
-
 ### 4. Overall key components, main cdk stack and construct creation process
 
 #### a. Overall architecture diagram
@@ -261,11 +259,11 @@ Below is the architecture diagram with highlighted important steps on overall pi
 
 #### b. Payload
 
-This project data payload generally undergoes transformation where:
+This project's data payload generally undergoes transformation where:
 
 ![payload overview](./images/goal_3_payload_overview.png)
 
-Data initial structure at client in csv format:
+Initial data structure at client in csv format:
 
 ![payload client csv file](./images/goal_3_payload_clientcsv.png)
 
@@ -273,7 +271,7 @@ Data transformation at client side from csv to json and response of data transmi
 
 ![payload client api POST status](./images/goal_3_payload_clientapi.png)
 
-Notice the response data from AWS API Gateway is being stringified or encoded twice, causing the quotes (") to be escaped into \".If json.dumps() is used, the body field is treated as a stringified JSON
+Notice the response data from AWS API Gateway is being stringified or encoded twice, causing the quotes (") to be escaped into \".If `json.dumps()` is used, the body field is treated as a stringified JSON
 
 Saved data from Kinesis Data Stream To S3 bucket `oltp-stream-bucket`:
 
@@ -315,7 +313,7 @@ There are some of the available authentication options for this project
 #### d. Design consideration
 - Lambda throttling limit
     - There should be consideration on throttling limit when invoking multiple lambda function. By default, in each region account, lambda invocation concurrency is limited to 1000 at a time
-    - I have inspected CloudWatch logs for every lambda, to find the potential lambda with throttle limit. Below is an excerpt of log to provide time taken for lambda invocation (from invoke to finished) estimation and usually the same format across all lambda
+    - I have inspected CloudWatch logs for every lambda, to find the potential lambda with throttle limit. Below is an excerpt of log that provide time taken for lambda invocation (from invoke to finished) estimation and usually the same format across all lambda
 
         ```
         REPORT RequestId: f4a085ba-b9f3-4ef2-b103-dd10db58947f Duration: 228.50 ms Billed Duration: 229 ms Memory Size: 128 MB Max Memory Used: 77 MB
@@ -326,8 +324,8 @@ There are some of the available authentication options for this project
         - 128 MB = The amount of memory configured for this Lambda function (can be upto 10gb)
         - 77 MB = The maximum amount of memory used by Lambda function during this invocation
         ```
-    - I learnt that lambda at start point, will have `init duration`, which is the time taken for lambda cold start
-    - The total time to invoke and finish lambda helps to determine whether my lambda will accidentally reach throttle limit. If a lambda could complete task within few 200 ms at a time, it means in a second, I can invoke the `same` lambda 5 times. It also important to measure as lambda capacity is to run at 15 minutes long only. So, I must be aware how fast does payload throughput going through at each lambda encountered. Cold start also causes some delay in time process at starting point or after lambda not used for certain time.
+    - I learnt that lambda at initial start point, will have `init duration`, which is the time taken for lambda cold start
+    - The total time to invoke and finish lambda helps to determine whether my lambda will accidentally reach throttle limit. If a lambda could complete task within few 200 ms at a time, it means in a second, I can invoke the `same` lambda 5 times. It also important to note that lambda can only run at 15 minutes long only at a time. So, I must be aware how fast does payload throughput going through at each lambda encountered plus that cold start also causes some delay in overall lambda's time process at the first initial start or after lambda not used for certain time.
 
         `ApiAuthorizerLambda` log record:
 
@@ -350,9 +348,10 @@ There are some of the available authentication options for this project
     
         ![](./images/goal_3_logstreams_s3rdslambdahandler.png)
 
-    - for incoming record into API Gateway, it is better to set (probably a merchant machine) to transfer data with aggregated time to avoid exhausting invocation of `ApiGatewayToKinesisLambda`
     - The most prominent throttling limit as per screenshot above is at `S3RdsLambdaHandler` where it consumes ~0.6 second per lambda activity. By default, each PutObject event will trigger a separate Lambda invocation. If S3 bucket receives 1,000+ uploads, lambda will invoke 1,000+ times causing the limit error. Also RDS instance itself will hvae issue as it might not able to handle such multiple connections at a time
     - Few workarounds are:
+        - Incoming data design throughput
+            - for incoming record into API Gateway, it is better to set (probably a merchant machine) to transfer data with aggregated data at a time to avoid exhausting invocation of `ApiGatewayToKinesisLambda`     
         - Use buffer mechanism
             - Once file arrive at S3, S3 will send notification to Simple Queue Service (SQS) or Eventbridge. Then only invoke lambda to process SQS/Eventbridge event in batches. The lambda also can be setup to use certain batch size to `copy / insert into` RDS afterwards
             - Also, I can increase buffer from initial point of contact of data throughput such as increasing number of shards for Kinesis (scale horizontally, typically 1MB/sec or 1000 records/sec per shard) and increase threshold size or time to accumulate more records per file in `KinesisToS3Lambda`. I can even use alternative service like Kinesis Data Firehose to completely replace `KinesisToS3Lambda` for the same task thus providing more reserve of lambda concurrency
@@ -362,7 +361,7 @@ There are some of the available authentication options for this project
         - Request to temporary upgrade limit to AWS support team (But also incur more cost)
 
 #### e. Main stack setup details
-Below is the simplified overview of main stack file input. It consists of resources declarations, assignment of event driven resource, specifying input credentials and resource tagging. It also included creating output in Cloud Formation stack's output GUI for debugging purpose.
+Below is the simplified overview of main stack file input. It consists of resources declarations, assignment of event driven resource, specifying input credentials and resource tagging. It also included creating output in Cloud Formation (cfn) stack's output GUI for debugging purpose.
 
 ![Main stack file overview diagram](./images/goal3_main_stack_minify.svg "Main stack file overview diagram")
 
@@ -382,7 +381,7 @@ The [main_stack.ts](./lib/aws-handson-stack.ts) script is mainly used to setup A
     - a physical ID (ensuring all created policy and role related to it is unique and trackable in Cloud Formation synthesize)
     - a custom name
     - a destroy policy (to auto remove the resource when stack is delete by creating a dedicated default lambda to perform the action)
-    - a Key Management Service (kms) key if applicable to encrypt data (at rest or data transit depends on nature of service. If for s3 bucket, data has no movement so it is encryption at rest). In this project the encryption is using client side managed, which means the credential encryption and decryption detail is managed by AWS
+    - a Key Management Service (kms) key if applicable to encrypt data (at rest or data transit depends on nature of service. If for s3 bucket, data has no movement so it is encrypted at rest). In this project the encryption is using client side managed, which means the credential encryption and decryption detail is managed by AWS
     - a logGroup -> to monitor resource via CloudWatch
     - a tagging -> ensuring all constructs are trackable and easy to manage bill (if complex project require isolation of billing to specific region or specific pipeline phase)
 
@@ -421,7 +420,7 @@ The [main_stack.ts](./lib/aws-handson-stack.ts) script is mainly used to setup A
         ![custom policies in GUI](./images/goal3_IAM_Custom_Policy_finalized.png)
 
     - each role will have custom name
-    - By specifying role type, role be assigned according to relevant principal -> principal is the related resource that will use this created role through role assumption. When role is assumed, the role will have temporary credential and permissions as in attached policy
+    - By specifying role type, role can be assigned according to relevant principal -> principal is the related resource that will use this created role through role assumption. When role is assumed, the role will have temporary credential and permissions as in attached policy
     - Also, by specifying role type, the role will have a specific max session duration -> maximum duration role is authorized to make action before next reconfigure credential happen. for example, lambda role will have 1 hour max session duration.
 
         ```
@@ -464,9 +463,9 @@ The [main_stack.ts](./lib/aws-handson-stack.ts) script is mainly used to setup A
         ![lambda authorized log](./images/goal3_api_gateway_cloudwatch_lambda_authorizer_finalized.png)
 
 - `apiGatewayLambda construct`:
-    - assign a handler [api_gateway_to_kinesis.py](../../lambda/api_gateway_to_kinesis.py)
+    - assigned a handler [api_gateway_to_kinesis.py](../../lambda/api_gateway_to_kinesis.py)
         - lambda function here will perform specific action related to request method in REST API format. if it is a POST method, it will fetch the send data and stored it into a specificed kinesis stream's buffer.
-    - passed an environemnt key for kinesis stream name -> this will be used by lambda function as destination path buffer to store data fetch from api POST method
+    - passed an environment key for kinesis stream name -> this will be used by lambda function as destination path buffer to store data fetch from api POST method
 
 - `kinesisToS3Lambda construct`:
     - assign a handler [kinesis_to_s3.py](../../lambda/kinesis_to_s3.py)
@@ -489,7 +488,7 @@ The [main_stack.ts](./lib/aws-handson-stack.ts) script is mainly used to setup A
         ![lambda triggered size](./images/goal3_s3_to_kinesis_cloudwatch_trigger_type_FINAL_finalized.png)    
 
     
-    - assign into environment s3 bucket name -> this bucket name will be use by the lambda function as store destination after fetch file from a kinesis stream
+    - assigned into environment s3 bucket name -> this bucket name will be use by the lambda function as store destination after fetch file from a kinesis stream
 
 - In main stack, some policy is not created inside respective resource construct.
     - this policy is grant using cdk feature `grant` method that will automatically create a default policy
